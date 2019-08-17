@@ -4,6 +4,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import net.jfabricationgames.go_server.model.JsonRpcError;
+import net.jfabricationgames.go_server.model.JsonRpcErrorCodes;
 import net.jfabricationgames.go_server.model.JsonRpcErrorResponse;
 import net.jfabricationgames.go_server.service.GoService;
 
@@ -17,7 +18,7 @@ public abstract class JsonRpcErrorUtil {
 	 */
 	public static Response createErrorResponse(String id) {
 		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
-		response.setError(new JsonRpcError(-10000, "Unknown error occured", null));
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.UNKNOWN_ERROR, "Unknown error occured", null));
 		
 		return Response.status(Status.OK).entity(response).build();
 	}
@@ -27,7 +28,7 @@ public abstract class JsonRpcErrorUtil {
 	 */
 	public static Response createLoginErrorResponse(String id) {
 		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
-		response.setError(new JsonRpcError(-10100, "Login was not successful", null));
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.LOGIN_ERROR, "Login was not successful", null));
 		
 		return Response.status(Status.OK).entity(response).build();
 	}
@@ -37,7 +38,7 @@ public abstract class JsonRpcErrorUtil {
 	 */
 	public static Response createIllegalParameterErrorResponse(String id, Object parameters) {
 		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
-		response.setError(new JsonRpcError(-11000, "Unexpected parameters in request", parameters));
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.UNEXPECTED_PARAMETERS_ERROR, "Unexpected parameters in request", parameters));
 		
 		return Response.status(Status.OK).entity(response).build();
 	}
@@ -47,7 +48,26 @@ public abstract class JsonRpcErrorUtil {
 	 */
 	public static Response createMethodNotFoundErrorResponse(String id, String methodName) {
 		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
-		response.setError(new JsonRpcError(-12000, "Unknown method", methodName));
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.UNKNOWN_METHOD_ERROR, "Unknown method", methodName));
+		
+		return Response.status(Status.OK).entity(response).build();
+	}
+	/**
+	 * Create a response that informs that the requested method (the method parameter in the request) is unknown
+	 */
+	public static Response createMethodCouldNotBeInvocedErrorResponse(String id, String methodName) {
+		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.METHOD_INVOKE_ERROR, "Method could not be invoked", methodName));
+		
+		return Response.status(Status.OK).entity(response).build();
+	}
+	
+	/**
+	 * Create a response that informs that the requested method (the method parameter in the request) is unknown
+	 */
+	public static Response createExecutionErrorResponse(String id, String methodName) {
+		JsonRpcErrorResponse response = createEmptyErrorResponse(id);
+		response.setError(new JsonRpcError(JsonRpcErrorCodes.EXECUTION_ERROR, "Error while executing the request", methodName));
 		
 		return Response.status(Status.OK).entity(response).build();
 	}

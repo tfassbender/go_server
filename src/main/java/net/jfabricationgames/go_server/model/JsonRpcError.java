@@ -32,6 +32,16 @@ public class JsonRpcError {
 		//default constructor for JSON serialization
 	}
 	
+	public JsonRpcError(int code, String message, Object data) {
+		this.code = code;
+		this.message = message;
+		this.data = data;
+	}
+	
+	public JsonRpcError(JsonRpcErrorCodes code, String message, Object data) {
+		this(code.getCode(), message, data);
+	}
+	
 	@Override
 	public String toString() {
 		return "JsonRpcError [code=" + code + ", message=" + message + ", data=" + data + "]";
@@ -71,12 +81,6 @@ public class JsonRpcError {
 		else if (!message.equals(other.message))
 			return false;
 		return true;
-	}
-	
-	public JsonRpcError(int code, String message, Object data) {
-		this.code = code;
-		this.message = message;
-		this.data = data;
 	}
 	
 	public int getCode() {
