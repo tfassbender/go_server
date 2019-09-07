@@ -3,6 +3,8 @@ package net.jfabricationgames.go_server.game;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class Referee {
 	
 	private Game game;
@@ -16,6 +18,7 @@ public class Referee {
 		this.game = game;
 		board = new int[game.getSize()][game.getSize()];
 		
+		//if there are no stones set BLACK starts (lastMove is WHITE)
 		if (game.getStones() == 0) {
 			lastMove = PlayerColor.WHITE;
 		}
@@ -26,15 +29,26 @@ public class Referee {
 		fillBoard(game.getMoves());
 	}
 	
-	private void fillBoard(List<Move> moves) {
+	/**
+	 * Execute all moves in the list to create the current board
+	 */
+	@VisibleForTesting
+	/*private*/ void fillBoard(List<Move> moves) throws IllegalArgumentException {
 		for (Move move : moves) {
 			if (isValidMove(move)) {
 				addMove(move);
 			}
+			else {
+				throw new IllegalArgumentException("Invalid move. The given list of moves contains a move that is not valid: " + move);
+			}
 		}
 	}
 	
-	private int[][] getBoardCopy() {
+	/**
+	 * A deep copy of the current board
+	 */
+	@VisibleForTesting
+	/*private*/ int[][] getBoardCopy() {
 		int[][] newBoard = new int[getBoardSize()][getBoardSize()];
 		for (int i = 0; i < getBoardSize(); i++) {
 			for (int j = 0; j < getBoardSize(); j++) {
@@ -44,6 +58,17 @@ public class Referee {
 		return newBoard;
 	}
 	
+	/**
+	 * Check whether the move is valid
+	 * 
+	 * Checked are:
+	 * <ul>
+	 * <li>color (players turn)</li>
+	 * <li>position (on field and empty)</li>
+	 * <li>no suicidal move (placed stone is not directly beaten)</li>
+	 * <li>ko rule (move doesn't create the same board that was there in the last move)</li>
+	 * </ul>
+	 */
 	public boolean isValidMove(Move move) {
 		if (move.getColor() != PlayerColor.getOpposizeColor(lastMove)) {
 			//wrong color
@@ -88,7 +113,8 @@ public class Referee {
 		return true;
 	}
 	
-	private static boolean boardsEqual(int[][] board, int[][] previousBoard) {
+	@VisibleForTesting
+	/*private*/ static boolean boardsEqual(int[][] board, int[][] previousBoard) {
 		boolean equal = true;
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
@@ -98,6 +124,9 @@ public class Referee {
 		return equal;
 	}
 	
+	/**
+	 * Execute a move without checking whether it's valid. The new stone is added and beaten ones are removed
+	 */
 	public void addMove(Move move) {
 		//copy the board to the previous board field
 		previousBoard = getBoardCopy();
@@ -111,7 +140,11 @@ public class Referee {
 		lastMove = move.getColor();
 	}
 	
-	private void removeBeaten(Move move) {
+	/**
+	 * Remove all stones that were beaten by the move
+	 */
+	@VisibleForTesting
+	/*private*/ void removeBeaten(Move move) {
 		//find the fields near to the move field
 		List<FieldPosition> near = move.getPos().getFieldsNear(game.getSize());
 		for (FieldPosition pos : near) {
@@ -125,7 +158,11 @@ public class Referee {
 		}
 	}
 	
-	private void removeStones(Collection<FieldPosition> stones) {
+	/**
+	 * Remove all stones in the collection from the field
+	 */
+	@VisibleForTesting
+	/*private*/ void removeStones(Collection<FieldPosition> stones) {
 		for (FieldPosition pos : stones) {
 			board[pos.getRow()][pos.getCol()] = PlayerColor.EMPTY.getCode();
 		}
@@ -140,5 +177,18 @@ public class Referee {
 	}
 	public int getBoardSize() {
 		return game.getSize();
+	}
+	
+	@VisibleForTesting
+	/*private*/ void setBoard(int[][] board) {
+		this.board = board;
+	}
+	@VisibleForTesting
+	/*private*/ void setPlayersTurn(PlayerColor playersTurn) {
+		this.lastMove = PlayerColor.getOpposizeColor(playersTurn);
+	}
+	@VisibleForTesting
+	/*private*/ void setPreviouseBoard(int[][] board) {
+		this.previousBoard = board;
 	}
 }

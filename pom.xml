@@ -6,7 +6,7 @@
 	<artifactId>go_server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>GoServer</name>
-	
+
 	<repositories>
 		<repository>
 			<id>snapshot-repository.java.net</id>
@@ -28,6 +28,14 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.4.0</version>
 		</dependency>
+
+		<!-- Test Framework for mocked, stubed, ... tests -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.21.0</version>
+		</dependency>
+
 
 		<!-- Google Guava -->
 		<dependency>
